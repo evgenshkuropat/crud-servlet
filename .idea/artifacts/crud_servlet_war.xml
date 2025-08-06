@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="crud-servlet.war">
+    <output-path>$PROJECT_DIR$/out/artifacts/crud_servlet_war</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp" />
+        <element id="file-copy" path="$PROJECT_DIR$/src/web.xml" />
+        <element id="directory" name="classes">
+          <element id="module-output" name="crud-servlet" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
