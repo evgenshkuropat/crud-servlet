@@ -98,5 +98,5 @@ public class OrderServlet extends HttpServlet {
     private int extractIdFromPath(String pathInfo) throws NumberFormatException {
         return Integer.parseInt(pathInfo.substring(1));
     }
-    // Додано для створення PR
+    // Це тестовий коментар для створення PR
 }
