@@ -99,4 +99,11 @@ public class OrderServlet extends HttpServlet {
         return Integer.parseInt(pathInfo.substring(1));
     }
     // Це тестовий коментар для створення PR
+    private void writeJsonError(HttpServletResponse resp, int status, String message) throws IOException {
+    resp.setStatus(status);
+    resp.setContentType("application/json");
+    resp.setCharacterEncoding("UTF-8");
+
+    resp.getWriter().write("{\"error\":\"" + message + "\"}");
+}
 }
