@@ -1,21 +1,26 @@
 package org.example;
 
+/**
+ * Product model used for JSON serialization and REST communication.
+ */
 public class Product {
+
     private int id;
     private String name;
     private double cost;
 
-    // порожній конструктор
-    public Product() {}
+    // Default constructor (required for Jackson)
+    public Product() {
+    }
 
-    // повний конструктор
+    // Full constructor
     public Product(int id, String name, double cost) {
         this.id = id;
         this.name = name;
         this.cost = cost;
     }
 
-    // гетери та сетери
+    // Getters and setters
     public int getId() {
         return id;
     }
@@ -38,5 +43,14 @@ public class Product {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", cost=" + cost +
+                '}';
     }
 }
