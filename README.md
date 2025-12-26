@@ -1,26 +1,21 @@
-## CRUD Servlet (Educational Project)
+## CRUD Servlet API (Orders) — Educational Project
 
-Java web app that demonstrates CRUD operations using Servlets.
+Java Servlet-based REST-style API for managing Orders using JSON.
 
 ### Tech Stack
 - Java
-- Maven
-- Servlet API
+- Jakarta Servlet API
 - Apache Tomcat
-- SQL/JDBC (DB: ____)
+- Jackson (ObjectMapper)
+- Maven
 
-### Features
-- CRUD endpoints
-- JSON request/response
-- Validation & basic error handling
+### Endpoints
+- POST `/orders` — create order (JSON)
+- GET `/orders` — list all orders
+- GET `/orders/{id}` — get order by id
+- PUT `/orders` — update order (by id in JSON body)
+- DELETE `/orders/{id}` — delete order
 
-### How to run
-1) Build: `mvn clean package`
-2) Deploy WAR to Tomcat
-3) Configure DB in (where you store DB settings)
-
-### Endpoints (example)
-- GET /...
-- POST /...
-- PUT /...
-- DELETE /...
+### Notes
+- Uses in-memory thread-safe storage (`ConcurrentHashMap`) for simplicity.
+- Supports `LocalDate` via `JavaTimeModule`.
