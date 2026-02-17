@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +23,7 @@ public class OrderServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // Create order from JSON
         Order order = mapper.readValue(req.getInputStream(), Order.class);
         orders.put(order.getId(), order);
         resp.setStatus(HttpServletResponse.SC_CREATED);
@@ -37,36 +37,35 @@ public class OrderServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            // повертаємо всі замовлення
-            Collection<Order> allOrders = orders.values();
-            mapper.writeValue(resp.getOutputStream(), allOrders);
-        } else {
-            try {
-                int id = extractIdFromPath(pathInfo);
-                Order order = orders.get(id);
-                if (order != null) {
-                    mapper.writeValue(resp.getOutputStream(), order);
-                } else {
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    resp.getWriter().write("{\"error\": \"Order not found\"}");
-                }
-            } catch (NumberFormatException e) {
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                resp.getWriter().write("{\"error\": \"Invalid ID format\"}");
+            // Return all orders
+            mapper.writeValue(resp.getOutputStream(), orders.values());
+            return;
+        }
+
+        try {
+            int id = extractIdFromPath(pathInfo);
+            Order order = orders.get(id);
+
+            if (order != null) {
+                mapper.writeValue(resp.getOutputStream(), order);
+            } else {
+                writeJsonError(resp, HttpServletResponse.SC_NOT_FOUND, "Order not found");
             }
+        } catch (NumberFormatException e) {
+            writeJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        // Update order by id from JSON body
         Order updated = mapper.readValue(req.getInputStream(), Order.class);
+
         if (orders.containsKey(updated.getId())) {
             orders.put(updated.getId(), updated);
             resp.setStatus(HttpServletResponse.SC_OK);
         } else {
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            resp.setContentType("application/json");
-            resp.getWriter().write("{\"error\": \"Order not found\"}");
+            writeJsonError(resp, HttpServletResponse.SC_NOT_FOUND, "Order not found");
         }
     }
 
@@ -75,27 +74,33 @@ public class OrderServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || pathInfo.equals("/")) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\": \"Missing order ID\"}");
+            writeJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Missing order ID");
             return;
         }
 
         try {
             int id = extractIdFromPath(pathInfo);
             Order removed = orders.remove(id);
+
             if (removed != null) {
-                resp.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 — успішно видалено
+                resp.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204 — deleted
             } else {
-                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("{\"error\": \"Order not found\"}");
+                writeJsonError(resp, HttpServletResponse.SC_NOT_FOUND, "Order not found");
             }
         } catch (NumberFormatException e) {
-            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\": \"Invalid ID format\"}");
+            writeJsonError(resp, HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
         }
     }
 
     private int extractIdFromPath(String pathInfo) throws NumberFormatException {
+        // pathInfo like "/123"
         return Integer.parseInt(pathInfo.substring(1));
+    }
+
+    private void writeJsonError(HttpServletResponse resp, int status, String message) throws IOException {
+        resp.setStatus(status);
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.getWriter().write("{\"error\":\"" + message + "\"}");
     }
 }
